@@ -22,7 +22,7 @@
         type="text"
         id="titulo"
         placeholder="Taça das bolinhas"
-        class="border-2 border-gray-100 py-4 px-2 w-full font-medium text-lightseagreen-900 placeholder-lightseagreen-200 mb-4"
+        class="border-2 border-gray-100 py-4 px-2 w-full font-medium text-lightseagreen-900 placeholder-lightseagreen-200 mb-4 animate__animated"
         v-model="state.title"
         required
         @blur="handleChange($event)"
@@ -38,7 +38,7 @@
         type="text"
         id="productOwner"
         placeholder="João Havelange"
-        class="border-2 border-gray-100 py-4 px-2 w-full font-medium text-lightseagreen-900 placeholder-lightseagreen-200 mb-4"
+        class="border-2 border-gray-100 py-4 px-2 w-full font-medium text-lightseagreen-900 placeholder-lightseagreen-200 mb-4 animate__animated"
         v-model="state.productOwner"
         required
         @blur="handleChange($event)"
@@ -85,9 +85,9 @@
             type="text"
             id="inputTeam"
             ref="inputTeam"
-            maxlength="14"
+            maxlength="15"
             placeholder="Tabajara FC"
-            class="border-2 border-gray-100 py-4 px-2 w-full font-medium text-lightseagreen-900 placeholder-lightseagreen-200 mb-4"
+            class="border-2 border-gray-100 py-4 px-2 w-full font-medium text-lightseagreen-900 placeholder-lightseagreen-200 mb-4 animate__animated"
             v-model="state.team"
             @focus="handleFocusInput($event)"
           />
@@ -163,11 +163,18 @@
 <script>
 import { computed, reactive, ref } from 'vue'
 
+import { setCompetition } from '../../store/competition'
+import { randomTeams } from '../../utils/randomTeams'
+import { useToast } from 'vue-toastification'
+import { useRouter } from 'vue-router'
+
 export default {
   setup () {
+    const toast = useToast()
+    const router = useRouter()
     const state = reactive({
-      title: '',
-      productOwner: '',
+      title: 'Copa das Favelas',
+      productOwner: 'João Paulo',
       qtdSelected: 4,
       qtdOptions: [
         { text: '4 times', value: 4 },
@@ -178,7 +185,7 @@ export default {
       roundTrip: true,
       timeCountText: 1,
       team: '',
-      teams: []
+      teams: ['Sport', 'América', 'Nós travamos', 'Joga muito']
     })
     const inputTeam = ref(null)
     const countTeam = computed(() => {
@@ -192,10 +199,10 @@ export default {
       if (e.currentTarget.value.length < 2) {
         e.currentTarget.classList.contains('green')
         e.currentTarget.classList.remove('green')
-        e.currentTarget.classList.add('red')
+        e.currentTarget.classList.add('red', 'animate__shakeY')
       } else {
         e.currentTarget.classList.contains('red')
-        e.currentTarget.classList.remove('red')
+        e.currentTarget.classList.remove('red', 'animate__shakeX')
         e.currentTarget.classList.add('green')
       }
     }
@@ -207,12 +214,12 @@ export default {
         state.team = ''
         return
       }
-      inputTeam.value.classList.add('red')
+      inputTeam.value.classList.add('red', 'animate__shakeX')
     }
 
     function handleFocusInput (e) {
       e.currentTarget.classList.contains('red') &&
-        e.currentTarget.classList.remove('red')
+        e.currentTarget.classList.remove('red', 'animate__shakeX')
     }
 
     function teamDelete (index) {
@@ -221,15 +228,23 @@ export default {
     }
 
     function generateCompetition () {
-      const data = {
+      setCompetition({
         competition: state.title,
         productOwner: state.productOwner,
         roundTrip: state.roundTrip,
-        teams: [...state.teams]
-      }
-
-      console.log(data)
+        teams: [...state.teams],
+        randomTeams: randomTeams(state.teams)
+      })
+      toast.success('Tudo ok, você será redirecionado, boa sorte...')
+      waitAndRedirect(3000, 'Competition')
     }
+
+    function waitAndRedirect (time, path) {
+      setTimeout(() => {
+        router.push({ name: `${path}` })
+      }, time)
+    }
+
     return {
       state,
       countTeam,
