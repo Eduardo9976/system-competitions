@@ -1,163 +1,168 @@
 <template>
-  <div class="viewForms">
-    <h1 class="font-bold text-center text-3xl py-10 text-white">
-      Crie uma nova competição
-    </h1>
+  <transition appear mode="in-out" class="animate__animated animate__zoomInUp">
+    <div class="viewForms">
+      <h1 class="font-bold text-center text-3xl py-10 text-white">
+        Crie uma nova competição
+      </h1>
 
-    <form
-      class="border-4 border-lightseagreen-400 max-w-5xl mx-auto p-3"
-      @submit.prevent="generateCompetition"
-    >
-      <h3 class="font-bold text-lightseagreen-900 text-2xl text-center pb-8">
-        Informe os dados
-      </h3>
-
-      <label
-        for="title"
-        class="font-bold mx-2 text-center text-lightseagreen-400"
+      <form
+        class="border-4 border-lightseagreen-400 max-w-5xl mx-auto p-3"
+        @submit.prevent="generateCompetition"
       >
-        Nome do Campeonato
-      </label>
-      <input
-        type="text"
-        id="titulo"
-        placeholder="Taça das bolinhas"
-        class="border-2 border-gray-100 py-4 px-2 w-full font-medium text-lightseagreen-900 placeholder-lightseagreen-200 mb-4 animate__animated"
-        v-model="state.title"
-        required
-        @blur="handleChange($event)"
-      />
+        <h3 class="font-bold text-lightseagreen-900 text-2xl text-center pb-8">
+          Informe os dados
+        </h3>
 
-      <label
-        for="title"
-        class="font-bold mx-2 text-center text-lightseagreen-400"
-      >
-        Nome do Organizador
-      </label>
-      <input
-        type="text"
-        id="productOwner"
-        placeholder="João Havelange"
-        class="border-2 border-gray-100 py-4 px-2 w-full font-medium text-lightseagreen-900 placeholder-lightseagreen-200 mb-4 animate__animated"
-        v-model="state.productOwner"
-        required
-        @blur="handleChange($event)"
-      />
-      <label
-        for="qtd"
-        class="font-bold mx-2 text-center text-lightseagreen-400 diff-label"
-      >
-        Qtd Times
-      </label>
-      <div
-        class="flex flex-col sm:flex-row justify-center items-center font-medium text-lightseagreen-900 w-full"
-      >
-        <select
-          id="qtd"
-          v-model="state.qtdSelected"
-          class="border-2 border-gray-100 py-4 px-2 flex-1 w-full sm:flex-auto sm:w-auto"
-        >
-          <option
-            class="border-2 border-gray-100 py-4 px-2 bg-lightseagreen-400 font-medium text-lightseagreen-900"
-            v-for="option in state.qtdOptions"
-            v-bind:value="option.value"
-            :key="option.value"
-          >
-            {{ option.text }}
-          </option>
-        </select>
-
-        <label for="roundTrip" class="mx-8 underline block m-5 sm:my-0 sm:mx-8">
-          <input type="checkbox" id="roundTrip" v-model="state.roundTrip" />
-          Jogos de ida e volta
-        </label>
-      </div>
-
-      <div class="flex flex-col sm:flex-row items-center py-4">
-        <div class="w-full">
-          <label
-            for="inputTeam"
-            class="font-bold mx-2 text-center text-lightseagreen-400 diff-label"
-          >
-            {{ countTeam }}
-          </label>
-          <input
-            type="text"
-            id="inputTeam"
-            ref="inputTeam"
-            maxlength="15"
-            placeholder="Tabajara FC"
-            class="border-2 border-gray-100 py-4 px-2 w-full font-medium text-lightseagreen-900 placeholder-lightseagreen-200 mb-4 animate__animated"
-            v-model="state.team"
-            @focus="handleFocusInput($event)"
-          />
-        </div>
-        <button
-          id="btn-add-new-team"
-          class="add"
-          :class="
-            state.timeCountText <= state.qtdSelected ? 'enable' : 'disabled'
-          "
-          :disabled="countTeam === 'Ok'"
-          @click.stop.prevent="handleAddTeam($event)"
-          @keyup.enter="handleAddTeam($event)"
-        >
-          {{ countTeam === 'Ok' ? 'Times já adicionados' : 'Adicionar' }}
-        </button>
-      </div>
-
-      <div class="my-5">
         <label
-          for="qtd"
+          for="title"
           class="font-bold mx-2 text-center text-lightseagreen-400"
         >
-          Times adicionados
+          Nome do Campeonato
         </label>
-        <transition name="no-mode-fade" mode="out-in">
-          <ul
-            v-if="state.teams.length > 0"
-            class="flex flex-wrap border-2 py-3"
-            id="teams"
-          >
-            <li
-              v-for="(item, index) in state.teams"
-              :key="item"
-              class="p-2 diff-li"
-            >
-              <span class="px-2 font-bold">Time {{ index + 1 }}:</span>
-              {{ item }}
-              <span
-                ><i
-                  class="far fa-trash-alt text-brand-danger pointer cursor-pointer"
-                  @click="teamDelete(index)"
-                ></i
-              ></span>
-            </li>
-          </ul>
-          <ul v-else class="flex border-2 py-3">
-            <li class="p-2 diff-li">Nenhum time adicionado.</li>
-          </ul>
-        </transition>
-      </div>
+        <input
+          type="text"
+          id="titulo"
+          placeholder="Taça das bolinhas"
+          class="border-2 border-gray-100 py-4 px-2 w-full font-medium text-lightseagreen-900 placeholder-lightseagreen-200 mb-4 animate__animated"
+          v-model="state.title"
+          required
+          @blur="handleChange($event)"
+        />
 
-      <transition name="no-mode-fade" mode="out-in">
-        <button
-          v-if="state.teams.length === state.qtdSelected"
-          class="confirm"
-          key="confirm"
+        <label
+          for="title"
+          class="font-bold mx-2 text-center text-lightseagreen-400"
         >
-          Criar
-        </button>
+          Nome do Organizador
+        </label>
+        <input
+          type="text"
+          id="productOwner"
+          placeholder="João Havelange"
+          class="border-2 border-gray-100 py-4 px-2 w-full font-medium text-lightseagreen-900 placeholder-lightseagreen-200 mb-4 animate__animated"
+          v-model="state.productOwner"
+          required
+          @blur="handleChange($event)"
+        />
+        <label
+          for="qtd"
+          class="font-bold mx-2 text-center text-lightseagreen-400 diff-label"
+        >
+          Qtd Times
+        </label>
         <div
-          v-else
-          class="p-4 my-16 font-medium text-center bg-lightseagreen-900 text-white"
-          key="text"
+          class="flex flex-col sm:flex-row justify-center items-center font-medium text-lightseagreen-900 w-full"
         >
-          Adicione a quantidade exata de times para gerar o Campeonato.
+          <select
+            id="qtd"
+            v-model="state.qtdSelected"
+            class="border-2 border-gray-100 py-4 px-2 flex-1 w-full sm:flex-auto sm:w-auto"
+          >
+            <option
+              class="border-2 border-gray-100 py-4 px-2 bg-lightseagreen-400 font-medium text-lightseagreen-900"
+              v-for="option in state.qtdOptions"
+              v-bind:value="option.value"
+              :key="option.value"
+            >
+              {{ option.text }}
+            </option>
+          </select>
+
+          <label
+            for="roundTrip"
+            class="mx-8 underline block m-5 sm:my-0 sm:mx-8"
+          >
+            <input type="checkbox" id="roundTrip" v-model="state.roundTrip" />
+            Jogos de ida e volta
+          </label>
         </div>
-      </transition>
-    </form>
-  </div>
+
+        <div class="flex flex-col sm:flex-row items-center py-4">
+          <div class="w-full">
+            <label
+              for="inputTeam"
+              class="font-bold mx-2 text-center text-lightseagreen-400 diff-label"
+            >
+              {{ countTeam }}
+            </label>
+            <input
+              type="text"
+              id="inputTeam"
+              ref="inputTeam"
+              maxlength="15"
+              placeholder="Tabajara FC"
+              class="border-2 border-gray-100 py-4 px-2 w-full font-medium text-lightseagreen-900 placeholder-lightseagreen-200 mb-4 animate__animated"
+              v-model="state.team"
+              @focus="handleFocusInput($event)"
+            />
+          </div>
+          <button
+            id="btn-add-new-team"
+            class="add"
+            :class="
+              state.timeCountText <= state.qtdSelected ? 'enable' : 'disabled'
+            "
+            :disabled="countTeam === 'Ok'"
+            @click.stop.prevent="handleAddTeam($event)"
+            @keyup.enter="handleAddTeam($event)"
+          >
+            {{ countTeam === 'Ok' ? 'Times já adicionados' : 'Adicionar' }}
+          </button>
+        </div>
+
+        <div class="my-5">
+          <label
+            for="qtd"
+            class="font-bold mx-2 text-center text-lightseagreen-400"
+          >
+            Times adicionados
+          </label>
+          <transition name="no-mode-fade" mode="out-in">
+            <ul
+              v-if="state.teams.length > 0"
+              class="flex flex-wrap border-2 py-3"
+              id="teams"
+            >
+              <li
+                v-for="(item, index) in state.teams"
+                :key="item"
+                class="p-2 diff-li"
+              >
+                <span class="px-2 font-bold">Time {{ index + 1 }}:</span>
+                {{ item }}
+                <span
+                  ><i
+                    class="far fa-trash-alt text-brand-danger pointer cursor-pointer"
+                    @click="teamDelete(index)"
+                  ></i
+                ></span>
+              </li>
+            </ul>
+            <ul v-else class="flex border-2 py-3">
+              <li class="p-2 diff-li">Nenhum time adicionado.</li>
+            </ul>
+          </transition>
+        </div>
+
+        <transition name="no-mode-fade" mode="out-in">
+          <button
+            v-if="state.teams.length === state.qtdSelected"
+            class="confirm"
+            key="confirm"
+          >
+            Criar
+          </button>
+          <div
+            v-else
+            class="p-4 my-16 font-medium text-center bg-lightseagreen-900 text-white"
+            key="text"
+          >
+            Adicione a quantidade exata de times para gerar o Campeonato.
+          </div>
+        </transition>
+      </form>
+    </div>
+  </transition>
 </template>
 
 <script>
