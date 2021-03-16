@@ -146,9 +146,10 @@
 
         <transition name="no-mode-fade" mode="out-in">
           <button
-            v-if="state.teams.length === state.qtdSelected"
+            v-if="state.teams.length === state.qtdSelected && state.buttonNew"
             class="confirm"
             key="confirm"
+            @click="state.buttonNew = false"
           >
             Criar
           </button>
@@ -178,8 +179,8 @@ export default {
     const toast = useToast()
     const router = useRouter()
     const state = reactive({
-      title: 'Copa das Favelas',
-      productOwner: 'João Paulo',
+      title: 'Nations League',
+      productOwner: 'Joe Biden',
       qtdSelected: 4,
       qtdOptions: [
         { text: '4 times', value: 4 },
@@ -190,7 +191,9 @@ export default {
       roundTrip: true,
       timeCountText: 1,
       team: '',
-      teams: ['Sport', 'América', 'Nós travamos', 'Joga muito']
+      teams: ['Portugal', 'França', 'Bélgica', 'Croácia'],
+      objTeams: [],
+      buttonNew: true
     })
     const inputTeam = ref(null)
     const countTeam = computed(() => {
@@ -204,7 +207,7 @@ export default {
       if (e.currentTarget.value.length < 2) {
         e.currentTarget.classList.contains('green')
         e.currentTarget.classList.remove('green')
-        e.currentTarget.classList.add('red', 'animate__shakeY')
+        e.currentTarget.classList.add('red', 'animate__shakeX')
       } else {
         e.currentTarget.classList.contains('red')
         e.currentTarget.classList.remove('red', 'animate__shakeX')
@@ -233,13 +236,17 @@ export default {
     }
 
     function generateCompetition () {
-      setCompetition({
+      state.teams.forEach(t => {
+        const team = { name: t, goals: Number(0), balance: Number(0) }
+        state.objTeams.push(team)
+      })
+      setCompetition(state.objTeams, {
         competition: state.title,
         productOwner: state.productOwner,
         roundTrip: state.roundTrip,
-        teams: [...state.teams],
         randomTeams: randomTeams(state.teams)
       })
+      toast.clear()
       toast.success('Tudo ok, você será redirecionado, boa sorte...')
       waitAndRedirect(3000, 'Competition')
     }
