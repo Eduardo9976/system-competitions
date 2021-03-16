@@ -21,13 +21,13 @@
           <div class="flex flex-row flex-wrap justify-center items-center">
             <button
               @click.stop.prevent="() => $emit('handleAnswer', true)"
-              class="m-3 w-28 p-2 font-medium text-white text-xl rounded focus:outline-none bg-brand-success border-2 border-brand-success hover:border-lightseagreen-900 hover:text-lightseagreen-900 transition-all duration-500"
+              class="m-3 w-28 p-2 font-medium text-white text-xl rounded focus:outline-none bg-brand-success border-2 border-brand-success hover:bg-brand-gray hover:border-lightseagreen-900 hover:text-lightseagreen-900 transition-all duration-500"
             >
               {{ confirmButton }}
             </button>
             <button
               @click="() => $emit('handleAnswer', false)"
-              class="m-3 w-28 p-2 font-medium text-white text-xl rounded focus:outline-none bg-brand-danger border-2 border-brand-danger hover:border-lightseagreen-900 hover:text-lightseagreen-900 transition-all duration-500"
+              class="m-3 w-28 p-2 font-medium text-white text-xl rounded focus:outline-none bg-brand-danger border-2 border-brand-danger hover:bg-brand-gray hover:border-lightseagreen-900 hover:text-lightseagreen-900 transition-all duration-500"
             >
               {{ cancelButton }}
             </button>

@@ -1,7 +1,7 @@
 <template>
   <div id="appContainer" class="w-full h-full flex justify-center items-center">
     <div
-      class="flex flex-col lg:flex-row items-center justify-center max-w-5xl py-4 mx-4 lg:mx-auto bg-lightseagreen-50 rounded border-solid border-4 border-lightseagreen-900"
+      class="flex flex-col lg:flex-row items-center justify-center max-w-5xl py-4 mx-4 lg:mx-auto bg-lightseagreen-50 rounded border-solid border-4 border-lightseagreen-400"
     >
       <div class="p-4 flex flex-col justify-center items-center flex-1">
         <h2 class="font-semibold text-gray-800 text-2xl">
@@ -17,14 +17,14 @@
 
         <button
           id="btn-new-competition"
-          class="cursor-pointer p-5 bg-mediumslateblue-500 rounded mt-10 text-white font-medium transform-gpu hover:scale-110"
+          class="cursor-pointer p-5 border-2 border-lightseagreen-400 rounded hover:text-lightseagreen-900 hover:border-lightseagreen-900 hover:bg-brand-gray font-medium transition-all duration-300 bg-brand-success mt-10 text-white font-medium"
           @click="router.push({ name: 'CreateCompetition' })"
         >
           Criar Nova Competição
         </button>
       </div>
       <img
-        class="rounded border-double border-lightseagreen-900 border-4 mx-4"
+        class="rounded border-double border-lightseagreen-400 border-4 mx-4"
         src="../../assets/imagens/trofeu.jpg"
         alt="Troféu"
       />

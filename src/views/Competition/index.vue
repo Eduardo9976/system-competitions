@@ -10,9 +10,11 @@
         Seja bem vindo a campetição {{ store.competition }}...
       </h1>
 
-      <div class="mx-auto p-4 max-w-screen-lg bg-brand-gray">
+      <div
+        class="mx-auto p-4 max-w-screen-lg bg-brand-gray border-4 border-lightseagreen-400 rounded"
+      >
         <p>
-          Fase 1
+          {{ store.competition }}
           {{ store.roundTrip ? '- Jogos de ida' : '' }} :
         </p>
         <ul class="py-2">
@@ -21,6 +23,17 @@
               v-if="index % 2 === 0"
               class="border-2 py-6 flex justify-center items-center flex-col font-medium my-4"
             >
+              <transition
+                appear
+                mode="in-out"
+                class="animate__animated animate__zoomInRight"
+              >
+                <div
+                  v-if="!store.roundTrip"
+                  :id="`penal-${index}`"
+                  class="p-2 text-white rounded penal hidden"
+                ></div>
+              </transition>
               <div class="flex justify-center">
                 <p
                   class="time1 order-1 flex flex-col justify-center items-center py-4 text-center sm:text-right order-2 sm:block sm:w-80"
@@ -60,8 +73,10 @@
               </div>
               <button
                 :id="`button-${index}-go`"
-                @click="handleClick($event, time, store.randomTeams[index + 1])"
-                class="py-2 mx-auto mt-4 bg-brand-info w-1/2 rounded-full text-white border-2 border-brand-info hover:text-lightseagreen-900 hover:border-lightseagreen-900 hover:bg-brand-gray transition-all duration-500 focus:outline-none disabled:opacity-50"
+                @click="
+                  handleClick($event, time, store.randomTeams[index + 1], index)
+                "
+                class="py-2 mx-auto mt-4 w-1/2 text-white bg-lightseagreen-400 border-2 border-lightseagreen-400 rounded hover:text-lightseagreen-900 hover:border-lightseagreen-900 hover:bg-brand-gray transition-all duration-500 focus:outline-none disabled:opacity-50"
               >
                 Confirmar resultado
               </button>
@@ -80,10 +95,10 @@
 
       <div
         v-if="store.roundTrip"
-        class="mx-auto p-4 max-w-screen-lg bg-brand-gray mt-8"
+        class="mx-auto p-4 max-w-screen-lg bg-brand-gray mt-8 border-4 border-lightseagreen-400 rounded"
       >
         <p>
-          Fase 1
+          {{ store.competition }}
           {{ store.roundTrip ? '- Jogos de volta' : '' }} :
         </p>
         <ul class="py-2 w-full">
@@ -92,6 +107,17 @@
               v-if="index % 2 == 0"
               class="border-2 py-6 flex justify-center items-center flex-col font-medium my-4"
             >
+              <transition
+                appear
+                mode="in-out"
+                class="animate__animated animate__zoomInRight"
+              >
+                <div
+                  v-if="store.roundTrip"
+                  :id="`penal-${index}`"
+                  class="p-2 text-white rounded penal hidden"
+                ></div>
+              </transition>
               <div class="flex justify-center">
                 <p
                   class="time1 order-1 flex flex-col justify-center items-center py-4 text-center sm:text-right order-2 sm:block sm:w-80"
@@ -134,9 +160,11 @@
                 </p>
               </div>
               <button
-                @click="handleClick($event, time, store.randomTeams[index + 1])"
+                @click="
+                  handleClick($event, time, store.randomTeams[index + 1], index)
+                "
                 :id="`button-${index}-cm`"
-                class="py-2 mx-auto mt-4 bg-brand-info w-1/2 rounded-full text-white border-2 border-brand-info hover:text-lightseagreen-900 hover:border-lightseagreen-900 hover:bg-brand-gray transition-all duration-500 focus:outline-none disabled:opacity-50"
+                class="py-2 mx-auto mt-4 w-1/2 text-white bg-lightseagreen-400 border-2 border-lightseagreen-400 rounded hover:text-lightseagreen-900 hover:border-lightseagreen-900 hover:bg-brand-gray transition-all duration-500 focus:outline-none disabled:opacity-50"
               >
                 Confirmar resultado
               </button>
@@ -153,6 +181,21 @@
           </template>
         </ul>
       </div>
+      <transition appear mode="in-out" class="animate__animated animate__backInDown">
+        <div
+      v-if="state.nextP"
+      id="nextPhase" class="text-center py-8 mt-6 max-w-screen-lg bg-lightseagreen-900 mx-auto rounded">
+        <p class="font-medium text-white sm:text-xl text-center">Encerramos os confrontos, esperamos vocês na próxima fase...</p>
+        <button
+        @click="
+          nextPhase
+        "
+        class="font-medium py-2 mx-auto my-4 w-1/2 text-white bg-lightseagreen-400 border-2 border-lightseagreen-400 rounded hover:text-lightseagreen-900 hover:border-lightseagreen-50 hover:bg-brand-gray transition-all duration-500 focus:outline-none transform-gpu hover:scale-110"
+      >
+        Avançar
+      </button>
+      </div>
+      </transition>
     </div>
   </transition>
 </template>
@@ -165,7 +208,7 @@ import Penalty from '../../components/Penalty'
 import { computed, onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import useStore from '../../hooks/useStore'
-import { copy, setGoals } from '../../store/competition'
+import { copy, setGoals, setResults } from '../../store/competition'
 
 export default {
   name: 'Competition',
@@ -183,34 +226,36 @@ export default {
       btnConfirm: undefined,
       qtdGames: 0,
       qtdGamePerTeam: 0,
+      winner: [],
+      losers: [],
       modalPenalty: false,
-      finish: 0
+      displayPenal: undefined,
+      finish: 0,
+      nextP: false
     })
 
     onMounted(() => {
       if (
         (store.competition.length < 2,
-        store.teams.length < 4,
-        store.randomTeams.length < 4)
+        store.teams.length < 2,
+        store.randomTeams.length < 2)
       ) {
         router.push({ path: '/' })
       }
       state.localTeams = copy()
       if (store.roundTrip) {
-        state.qtdGames = state.localTeams.length
+        state.qtdGames = store.randomTeams.length
         state.qtdGamePerTeam = 2
       } else {
-        state.qtdGames = state.localTeams.length / 2
+        state.qtdGames = store.randomTeams.length / 2
         state.qtdGamePerTeam = 1
       }
     })
 
     const computedTeam1 = computed(() => {
-      console.log(state.team1, '1')
       return state.team1
     })
     const computedTeam2 = computed(() => {
-      console.log(state.team1, '2')
       return state.team2
     })
 
@@ -222,7 +267,7 @@ export default {
       state.localTeams[index].goals = event.value
     }
 
-    function handleClick (event, t1, t2) {
+    function handleClick (event, t1, t2, displayPenal) {
       if (
         (event.target.previousElementSibling.children[0].children[1].value ===
           '') &
@@ -265,6 +310,7 @@ export default {
       state.btnConfirm = event.target.id
       state.team1 = t1
       state.team2 = t2
+      state.displayPenal = displayPenal
       state.confirm = true
     }
 
@@ -282,6 +328,7 @@ export default {
         inpT2.classList.add('disabled')
         btConf.setAttribute('disabled', true)
         btConf.classList.add('disabled')
+        btConf.innerText = 'Ok'
         state.finish++
         state.localTeams[it1].played = state.localTeams[it1].played + 1
         state.localTeams[it2].played = state.localTeams[it2].played + 1
@@ -295,28 +342,32 @@ export default {
         if (state.localTeams[it1].played === state.qtdGamePerTeam) {
           let t1SumGoals = 0
           let t2SumGoals = 0
-          if (state.roundTrip) {
+          if (store.roundTrip) {
             t1SumGoals =
-              state.localTeams[it1].game1.goals +
-              state.localTeams[it1].game2.goals
+              Number(state.localTeams[it1].game1.goals) +
+              Number(state.localTeams[it1].game2.goals)
             t2SumGoals =
-              state.localTeams[it2].game1.goals +
-              state.localTeams[it2].game2.goals
+              Number(state.localTeams[it2].game1.goals) +
+              Number(state.localTeams[it2].game2.goals)
           } else {
             t1SumGoals = state.localTeams[it1].game1.goals
             t2SumGoals = state.localTeams[it2].game1.goals
           }
           if (t1SumGoals === t2SumGoals) {
             state.modalPenalty = true
-            console.log(computedTeam1)
-            console.log(computedTeam2)
-            console.log('É penalty!!!!!!')
+          }
+          if (t1SumGoals > t2SumGoals) {
+            state.winner.push(state.localTeams[it1].name)
+            state.losers.push(state.localTeams[it2].name)
+          }
+          if (t2SumGoals > t1SumGoals) {
+            state.winner.push(state.localTeams[it2].name)
+            state.losers.push(state.localTeams[it1].name)
           }
         }
 
         if (state.finish === state.qtdGames) {
-          window.alert('Acabou')
-          console.log('acabou')
+          state.nextP = true
         }
       }
 
@@ -326,8 +377,30 @@ export default {
     }
 
     function handlePenals (e) {
+      const index = state.localTeams.findIndex(t => t.name === e.win)
+      state.localTeams[index].game1.goals =
+        state.localTeams[index].game1.goals + 1
+      const displayPenal = document.getElementById(
+        `penal-${state.displayPenal}`
+      )
+      store.roundTrip
+        ? (displayPenal.innerText = `${e.t2} - ${e.t2r}  X  ${e.t1r} - ${e.t1}`)
+        : (displayPenal.innerText = `${e.t1} - ${e.t1r}  X  ${e.t2r} - ${e.t2}`)
+
+      if (e.t1r > e.t2r) {
+        state.winner.push(e.t1)
+        state.losers.push(e.t2)
+      } else {
+        state.winner.push(e.t2)
+        state.losers.push(e.t1)
+      }
+      displayPenal.classList.remove('hidden')
       state.modalPenalty = false
-      console.log(e)
+    }
+
+    function nextPhase () {
+      setResults(state.winner, state.losers)
+      router.push({ name: 'Congrats' })
     }
 
     return {
@@ -339,7 +412,8 @@ export default {
       haveGoal,
       handleClick,
       handleAnswer,
-      handlePenals
+      handlePenals,
+      nextPhase
     }
   }
 }
@@ -360,5 +434,21 @@ button.disabled {
   cursor: unset;
   border-color: #1b3d3c;
   color: #1b3d3c;
+}
+.penal {
+  @apply bg-lightseagreen-400;
+}
+.penal::before {
+  @apply rounded;
+  content: 'Pênaltis';
+  color: #ffff;
+  font-size: 16px;
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: #1b3d3c;
+}
+#nextPhase {
+  background: linear-gradient(to top, transparent 5%, #1b3d3c 20%);
 }
 </style>

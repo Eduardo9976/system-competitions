@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 const Home = () => import('../views/Home/index.vue')
 const CreateCompetition = () => import('../views/CreateCompetition/index.vue')
 const Competition = () => import('../views/Competition/index.vue')
+const Congrats = () => import('../views/Congrats')
 
 const routes = [
   {
@@ -18,6 +19,11 @@ const routes = [
     path: '/competition',
     name: 'Competition',
     component: Competition
+  },
+  {
+    path: '/congrats',
+    name: 'Congrats',
+    component: Congrats
   }
 ]
 

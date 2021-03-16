@@ -6,7 +6,7 @@
       </h1>
 
       <form
-        class="border-4 border-lightseagreen-400 max-w-5xl mx-auto p-3"
+        class="border-4 border-lightseagreen-400 rounded max-w-5xl mx-auto p-3"
         @submit.prevent="generateCompetition"
       >
         <h3 class="font-bold text-lightseagreen-900 text-2xl text-center pb-8">
@@ -149,7 +149,7 @@
             v-if="state.teams.length === state.qtdSelected && state.buttonNew"
             class="confirm"
             key="confirm"
-            @click="state.buttonNew = false"
+            @click="handleValidation"
           >
             Criar
           </button>
@@ -179,8 +179,8 @@ export default {
     const toast = useToast()
     const router = useRouter()
     const state = reactive({
-      title: 'Nations League',
-      productOwner: 'Joe Biden',
+      title: '',
+      productOwner: '',
       qtdSelected: 4,
       qtdOptions: [
         { text: '4 times', value: 4 },
@@ -188,10 +188,10 @@ export default {
         { text: '16 times', value: 16 },
         { text: '32 times', value: 32 }
       ],
-      roundTrip: true,
+      roundTrip: false,
       timeCountText: 1,
       team: '',
-      teams: ['Portugal', 'França', 'Bélgica', 'Croácia'],
+      teams: [],
       objTeams: [],
       buttonNew: true
     })
@@ -235,6 +235,12 @@ export default {
       state.timeCountText--
     }
 
+    function handleValidation () {
+      if (state.competition !== '' && state.productOwner !== '' && state.teams.length === state.qtdSelected) {
+        state.buttonNew = false
+      }
+    }
+
     function generateCompetition () {
       state.teams.forEach(t => {
         const team = { name: t, goals: Number(0), balance: Number(0) }
@@ -265,6 +271,7 @@ export default {
       handleAddTeam,
       handleFocusInput,
       teamDelete,
+      handleValidation,
       generateCompetition
     }
   }
@@ -291,7 +298,7 @@ label {
   background: #ffff;
 }
 .add {
-  @apply border-2 border-gray-100 font-medium text-lightseagreen-900 ml-2  hover:text-white hover:border-lightseagreen-900 transition-all duration-300;
+  @apply text-white bg-lightseagreen-400 border-2 border-lightseagreen-400 rounded hover:text-lightseagreen-900 hover:border-lightseagreen-900 hover:bg-brand-gray font-medium transition-all duration-300;
   height: 60px;
   margin-top: -5px;
   max-width: 218px;
@@ -322,7 +329,7 @@ label {
   @apply border-brand-danger;
 }
 .confirm {
-  @apply border-2 border-gray-100 font-medium text-lightseagreen-900 p-3 my-14  hover:text-white hover:border-lightseagreen-900 transition-all duration-300 bg-brand-success w-full;
+  @apply text-white border-2 border-lightseagreen-400 rounded hover:text-lightseagreen-900 hover:border-lightseagreen-900 hover:bg-brand-gray font-medium p-3 my-14 transition-all duration-300 bg-brand-success w-full;
 }
 .diff-li {
   flex: 1 1 243px;
